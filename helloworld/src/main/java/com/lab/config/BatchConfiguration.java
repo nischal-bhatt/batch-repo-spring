@@ -1,6 +1,7 @@
 package com.lab.config;
 
 import com.lab.listener.HelloWorldJobExecutionListener;
+import com.lab.listener.HelloWorldStepExecutionListener;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.StepContribution;
@@ -24,6 +25,8 @@ public class BatchConfiguration {
     private StepBuilderFactory stepBuilderFactory;
     @Autowired
     private HelloWorldJobExecutionListener helloWorldJobExecutionListener;
+    @Autowired
+    private HelloWorldStepExecutionListener helloWorldStepExecutionListener;
 
 
     private Tasklet helloWorldTasklet2() {
@@ -55,12 +58,14 @@ public class BatchConfiguration {
     @Bean
     public Step step1() {
         return stepBuilderFactory.get("step1")
+                .listener(helloWorldStepExecutionListener)
                 .tasklet(helloworldTasklet()).build();
     }
 
     @Bean
     public Step step2(){
         return stepBuilderFactory.get("step2")
+                .listener(helloWorldStepExecutionListener)
                 .tasklet(helloWorldTasklet2()).build();
     }
 

@@ -17,6 +17,7 @@ public class HelloWorldJobExecutionListener implements JobExecutionListener {
         messages.add("hi");
         messages.add("nish");
         jobExecution.getExecutionContext().put("key",messages);
+        System.out.println("before starting job - after set :" + jobExecution.getExecutionContext().toString());
     }
 
     @Override
