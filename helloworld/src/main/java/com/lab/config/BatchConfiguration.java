@@ -5,6 +5,8 @@ import com.lab.listener.HelloWorldStepExecutionListener;
 import com.lab.model.Product;
 import com.lab.processor.InMemeItemProcessor;
 import com.lab.reader.InMemeReader;
+import com.lab.reader.ProductServiceAdapter;
+import com.lab.service.ProductService;
 import com.lab.writer.ConsoleItemWriter;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
@@ -17,7 +19,7 @@ import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.item.ItemReader;
-import org.springframework.batch.item.ItemWriter;
+import org.springframework.batch.item.adapter.ItemReaderAdapter;
 import org.springframework.batch.item.database.JdbcCursorItemReader;
 import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper;
@@ -54,6 +56,12 @@ public class BatchConfiguration {
 
     @Autowired
     private DataSource dataSource;
+
+    @Autowired
+    private ProductService productService;
+
+    @Autowired
+    private ProductServiceAdapter productServiceAdapter;
 
     private Tasklet helloWorldTasklet2() {
         return (
@@ -96,7 +104,8 @@ public class BatchConfiguration {
                 //.reader(flatFileItemReader(null))
                 //processor(inMemeItemProcessor)
                 //.reader(xmlItemReader(null))
-                .reader(jdbcCursorItemReader())
+                //.reader(jdbcCursorItemReader())
+                .reader(serviceItemReader())
                 .writer(new ConsoleItemWriter())
                 .build();
     }
@@ -106,6 +115,16 @@ public class BatchConfiguration {
     @Bean
     public ItemReader reader() {
         return new InMemeReader();
+    }
+
+    @Bean
+    public ItemReaderAdapter serviceItemReader(){
+        ItemReaderAdapter reader = new ItemReaderAdapter();
+        reader.setTargetObject(productServiceAdapter);
+        reader.setTargetMethod("nextProduct");
+
+        return reader;
+
     }
 
     @Bean
