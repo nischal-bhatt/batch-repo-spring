@@ -112,6 +112,7 @@ public class BatchConfiguration {
         return jobBuilderFactory.get("chunkJob")
                 .listener(helloWorldJobExecutionListener)
                 .start(step3())
+                .next(step1())
                 .build();
     }
 
