@@ -19,6 +19,7 @@ public class ProductController {
 
         products.add(new Product(1,"fromrest","test", BigDecimal.valueOf(2.33),10));
         products.add(new Product(2,"fromrest","test",BigDecimal.valueOf(2.33),10));
+        products.add(new Product(3,"fromrest","test",BigDecimal.valueOf(2.33),10));
         return products;
     }
 }
