@@ -190,13 +190,14 @@ public class BatchConfig {
                 .<Product,Product> chunk(3)
                 .reader(reader(null))
                 //.writer(flatFileItemWriter(null))
-                //.writer(dbWriter())
+                .writer(dbWriter())
                 //.reader(serviceAdapter())
                 .processor(productProcessor)
-                .writer(flatFileItemWriter(null))
-                //.faultTolerant()
+                //.writer(flatFileItemWriter(null))
+                .faultTolerant()
                 //.skip(RuntimeException.class)
-                //.skipLimit(10)
+                .skip(FlatFileParseException.class)
+                .skipLimit(10)
                 //.skipPolicy(new AlwaysSkipItemSkipPolicy())
                 //.listener(new ProductListener())
                 //.faultTolerant()
@@ -212,7 +213,7 @@ public class BatchConfig {
     @Bean
     public Job job1(){
         return job.get("job1")
-                //.incrementer(new RunIdIncrementer())
+                .incrementer(new RunIdIncrementer())
                 .start(step0())
                 .next(step1())
                 .build();
