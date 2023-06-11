@@ -1,5 +1,6 @@
 package com.batchwriters.batchwriter.BatchConfig;
 
+import com.batchwriters.batchwriter.ConsoleTasklet;
 import com.batchwriters.batchwriter.listener.ProductListener;
 import com.batchwriters.batchwriter.model.Product;
 import com.batchwriters.batchwriter.processor.ProductProcessor;
@@ -55,15 +56,17 @@ public class BatchConfig {
     @Autowired
     private ProductProcessor productProcessor;
 
+    /*
     @Autowired
     ProductServiceAdapter productServiceAdapter;
-
+*/
+    /*
     public ItemReaderAdapter serviceAdapter(){
         ItemReaderAdapter readerAdapter = new ItemReaderAdapter();
         readerAdapter.setTargetObject(productServiceAdapter);
         readerAdapter.setTargetMethod("nextProduct");
         return readerAdapter;
-    }
+    }*/
 
 
     @Bean
@@ -102,6 +105,7 @@ public class BatchConfig {
             @Value("#{jobParameters['fileOutput']}")FileSystemResource inputFile
     ){
 
+        /*
         FlatFileItemWriter flatFileItemWriter
                 = new FlatFileItemWriter<Product>(){
             @Override
@@ -115,7 +119,7 @@ public class BatchConfig {
                 return super.doWrite(items);
             }
         };
-
+*/      FlatFileItemWriter flatFileItemWriter = new FlatFileItemWriter();
         flatFileItemWriter.setResource(inputFile);
         flatFileItemWriter.setLineAggregator(new DelimitedLineAggregator(){
             {
@@ -134,13 +138,13 @@ public class BatchConfig {
 
             }
         });
-        //flatFileItemWriter.setAppendAllowed(true);
-        flatFileItemWriter.setFooterCallback(new FlatFileFooterCallback() {
+        flatFileItemWriter.setAppendAllowed(true);
+       /* flatFileItemWriter.setFooterCallback(new FlatFileFooterCallback() {
             @Override
             public void writeFooter(Writer writer) throws IOException {
                 writer.write("written at " + new SimpleDateFormat().format(new Date()));
             }
-        });
+        });*/
         return flatFileItemWriter;
     }
 
@@ -174,26 +178,33 @@ public class BatchConfig {
     }
 
     @Bean
+    public Step step0(){
+        return steps.get("step0")
+                .tasklet(new ConsoleTasklet())
+                .build();
+    }
+
+    @Bean
     public Step step1(){
         return steps.get("step1")
                 .<Product,Product> chunk(3)
-                //.reader(reader(null))
+                .reader(reader(null))
                 //.writer(flatFileItemWriter(null))
                 //.writer(dbWriter())
-                .reader(serviceAdapter())
+                //.reader(serviceAdapter())
                 .processor(productProcessor)
-                .writer(dbWriter2())
+                .writer(flatFileItemWriter(null))
                 //.faultTolerant()
                 //.skip(RuntimeException.class)
                 //.skipLimit(10)
                 //.skipPolicy(new AlwaysSkipItemSkipPolicy())
                 //.listener(new ProductListener())
-                .faultTolerant()
+                //.faultTolerant()
 
-                .retry(ResourceAccessException.class)
-                .retryLimit(5)
-                .skip(ResourceAccessException.class)
-                .skipLimit(30)
+                //.retry(ResourceAccessException.class)
+                //.retryLimit(5)
+                //.skip(ResourceAccessException.class)
+                //.skipLimit(30)
                 //.skipPolicy(new AlwaysSkipItemSkipPolicy())
                 .build();
     }
@@ -201,8 +212,9 @@ public class BatchConfig {
     @Bean
     public Job job1(){
         return job.get("job1")
-                .incrementer(new RunIdIncrementer())
-                .start(step1())
+                //.incrementer(new RunIdIncrementer())
+                .start(step0())
+                .next(step1())
                 .build();
     }
 }

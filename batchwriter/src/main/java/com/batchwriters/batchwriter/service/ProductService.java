@@ -4,7 +4,7 @@ import com.batchwriters.batchwriter.model.Product;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-@Service
+//@Service
 public class ProductService {
 
     public Product getProduct(){
