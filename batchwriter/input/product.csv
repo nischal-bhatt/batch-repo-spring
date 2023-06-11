@@ -2,4 +2,12 @@ productID,productName,productDesc,price,unit
 1,Apple,Apple cell phone,500.00,10
 2,Dell,Dell laptop,1000,5
 3,Mac,Mac Lappy,1200,8
-4,sss,sss,1299,8
+4,sss,sss,1299,8,error
+5,Apple,Apple cell phone,500.00,10
+6,Dell,Dell laptop,1000,5
+7,Mac,Mac Lappy,1200,8,error
+8,sss,sss,1299,8
+9,Apple,Apple cell phone,500.00,10
+10,Dell,Dell laptop,1000,5,error
+11,Mac,Mac Lappy,1200,8
+12,sss,sss,1299,8,error
