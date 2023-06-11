@@ -3,6 +3,7 @@ package com.batchwriters.batchwriter.BatchConfig;
 import com.batchwriters.batchwriter.listener.ProductListener;
 import com.batchwriters.batchwriter.model.Product;
 import com.batchwriters.batchwriter.processor.ProductProcessor;
+import com.batchwriters.batchwriter.reader.ProductServiceAdapter;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
@@ -11,6 +12,7 @@ import org.springframework.batch.core.configuration.annotation.StepBuilderFactor
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.core.step.skip.AlwaysSkipItemSkipPolicy;
+import org.springframework.batch.item.adapter.ItemReaderAdapter;
 import org.springframework.batch.item.database.ItemPreparedStatementSetter;
 import org.springframework.batch.item.database.JdbcBatchItemWriter;
 import org.springframework.batch.item.database.builder.JdbcBatchItemWriterBuilder;
@@ -25,6 +27,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.web.client.ResourceAccessException;
 
 
 import javax.sql.DataSource;
@@ -51,6 +54,18 @@ public class BatchConfig {
 
     @Autowired
     private ProductProcessor productProcessor;
+
+    @Autowired
+    ProductServiceAdapter productServiceAdapter;
+
+    public ItemReaderAdapter serviceAdapter(){
+        ItemReaderAdapter readerAdapter = new ItemReaderAdapter();
+        readerAdapter.setTargetObject(productServiceAdapter);
+        readerAdapter.setTargetMethod("nextProduct");
+        return readerAdapter;
+    }
+
+
     @Bean
     @StepScope
     public FlatFileItemReader reader(
@@ -162,16 +177,24 @@ public class BatchConfig {
     public Step step1(){
         return steps.get("step1")
                 .<Product,Product> chunk(3)
-                .reader(reader(null))
+                //.reader(reader(null))
                 //.writer(flatFileItemWriter(null))
                 //.writer(dbWriter())
+                .reader(serviceAdapter())
                 .processor(productProcessor)
                 .writer(dbWriter2())
-                .faultTolerant()
-                .skip(RuntimeException.class)
-                .skipLimit(10)
+                //.faultTolerant()
+                //.skip(RuntimeException.class)
+                //.skipLimit(10)
                 //.skipPolicy(new AlwaysSkipItemSkipPolicy())
-                .listener(new ProductListener())
+                //.listener(new ProductListener())
+                .faultTolerant()
+
+                .retry(ResourceAccessException.class)
+                .retryLimit(5)
+                .skip(ResourceAccessException.class)
+                .skipLimit(30)
+                //.skipPolicy(new AlwaysSkipItemSkipPolicy())
                 .build();
     }
 
