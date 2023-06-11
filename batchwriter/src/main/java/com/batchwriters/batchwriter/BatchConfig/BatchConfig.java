@@ -1,6 +1,7 @@
 package com.batchwriters.batchwriter.BatchConfig;
 
 import com.batchwriters.batchwriter.model.Product;
+import com.batchwriters.batchwriter.processor.ProductProcessor;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
@@ -48,6 +49,8 @@ public class BatchConfig {
     @Autowired
     private DataSource dataSource;
 
+    @Autowired
+    private ProductProcessor productProcessor;
     @Bean
     @StepScope
     public FlatFileItemReader reader(
@@ -151,6 +154,7 @@ public class BatchConfig {
                 .reader(reader(null))
                 //.writer(flatFileItemWriter(null))
                 //.writer(dbWriter())
+                .processor(productProcessor)
                 .writer(dbWriter2())
                 .build();
     }
