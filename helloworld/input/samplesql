@@ -1,0 +1,12 @@
+CREATE TABLE products (
+    prod_id int,
+    prod_name varchar(50),
+    prod_desc varchar(100),
+    unit int,
+    price double
+);
+
+select * from products;
+insert into products (prod_id,prod_name,prod_desc,unit,price) values (1,'test','test123',123,22.23);
+insert into products (prod_id,prod_name,prod_desc,unit,price) values (1,'test','test123',123,22.23);
+insert into products (prod_id,prod_name,prod_desc,unit,price) values (1,'test','test123',123,22.23);
