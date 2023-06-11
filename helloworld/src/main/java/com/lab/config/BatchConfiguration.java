@@ -87,9 +87,9 @@ public class BatchConfiguration {
         return stepBuilderFactory.get("step2")
                 .<Integer,Integer>chunk(3)
                 //.reader(reader())
-                //.reader(flatFileItemReader(null))
-                //.processor(inMemeItemProcessor)
-                .reader(xmlItemReader(null))
+                .reader(flatFileItemReader(null))
+                //processor(inMemeItemProcessor)
+                //.reader(xmlItemReader(null))
                 .writer(new ConsoleItemWriter())
                 .build();
     }
