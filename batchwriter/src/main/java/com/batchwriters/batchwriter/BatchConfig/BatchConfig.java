@@ -34,6 +34,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 @EnableBatchProcessing
 @Configuration
@@ -87,7 +88,18 @@ public class BatchConfig {
     ){
 
         FlatFileItemWriter flatFileItemWriter
-                = new FlatFileItemWriter();
+                = new FlatFileItemWriter<Product>(){
+            @Override
+            public String doWrite(List<? extends Product> items){
+                for(Product p : items){
+                    if (p.getProductId() == 9){
+                        throw new RuntimeException("Becayuse UD is 9");
+                    }
+
+                }
+                return super.doWrite(items);
+            }
+        };
 
         flatFileItemWriter.setResource(inputFile);
         flatFileItemWriter.setLineAggregator(new DelimitedLineAggregator(){
@@ -156,9 +168,9 @@ public class BatchConfig {
                 .processor(productProcessor)
                 .writer(dbWriter2())
                 .faultTolerant()
-                //.skip(FlatFileParseException.class)
-                //.skipLimit(3)
-                .skipPolicy(new AlwaysSkipItemSkipPolicy())
+                .skip(RuntimeException.class)
+                .skipLimit(10)
+                //.skipPolicy(new AlwaysSkipItemSkipPolicy())
                 .listener(new ProductListener())
                 .build();
     }
