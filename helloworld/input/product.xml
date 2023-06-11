@@ -1,0 +1,31 @@
+<products>
+    <product>
+        <productId>1</productId>
+        <prodName>app</prodName>
+        <productDesc>XML TYPE</productDesc>
+        <unit>10</unit>
+        <price>300.00</price>
+    </product>
+    <product>
+        <productId>2</productId>
+        <prodName>app-la</prodName>
+        <productDesc>XML TYPE=la</productDesc>
+        <unit>100</unit>
+        <price>3002.00</price>
+    </product>
+    <product>
+        <productId>23</productId>
+        <prodName>app-la2</prodName>
+        <productDesc>XML TYPE=las</productDesc>
+        <unit>1004</unit>
+        <price>3008.00</price>
+    </product>
+    <product>
+        <productId>24</productId>
+        <prodName>app-la2</prodName>
+        <productDesc>XML TYPE=las</productDesc>
+        <unit>1004</unit>
+        <price>3008.00</price>
+    </product>
+
+</products>

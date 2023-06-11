@@ -22,12 +22,14 @@ import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper;
 import org.springframework.batch.item.file.mapping.DefaultLineMapper;
 import org.springframework.batch.item.file.transform.DelimitedLineTokenizer;
+import org.springframework.batch.item.xml.StaxEventItemReader;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
 import java.nio.file.FileSystem;
 
@@ -85,8 +87,9 @@ public class BatchConfiguration {
         return stepBuilderFactory.get("step2")
                 .<Integer,Integer>chunk(3)
                 //.reader(reader())
-                .reader(flatFileItemReader(null))
+                //.reader(flatFileItemReader(null))
                 //.processor(inMemeItemProcessor)
+                .reader(xmlItemReader(null))
                 .writer(new ConsoleItemWriter())
                 .build();
     }
@@ -96,6 +99,24 @@ public class BatchConfiguration {
     @Bean
     public ItemReader reader() {
         return new InMemeReader();
+    }
+
+    @StepScope
+    @Bean
+    public StaxEventItemReader xmlItemReader(@Value("#{jobParameters['fileInput']}")
+                                             FileSystemResource inputFile){
+
+        StaxEventItemReader reader = new StaxEventItemReader();
+        reader.setResource(inputFile);
+
+        reader.setFragmentRootElementName("product");
+        reader.setUnmarshaller(new Jaxb2Marshaller(){
+            {
+                setClassesToBeBound(Product.class);
+            }
+        });
+
+        return reader;
     }
 
     @StepScope
